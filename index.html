@@ -1,0 +1,227 @@
+<html>
+	<head>
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+		<style>
+			body { font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+				font-size: 21px;
+				font-weight: 200;}
+			h1 {font-weight: 500;}
+			p {font-family: "Helvetica Neue", Helvetica,Arial,sans-serif; 
+				font-size: 21px;
+				font-weight: 200;} 
+			div { margin: 10px; }
+		</style>
+	</head>
+	<body>
+		<h1>Homework One</h1>
+		<p>
+			<div>1.</div>
+			<div id="p01output"></div>
+			
+			<!-- 2. Likely Voter Sample Vote: <span id = "realisticSampleVote"></span>
+			</br>
+			3. Result of 20 likely voters: <span id = "p03output"></span>
+			</br>
+			4. Winner of a poll of 20 likely voters: <span id = "p04output"></span>
+			</br>
+			5. 5 polls with 100 likely voters: <span id = "p05output"></span> -->
+
+			<script type="text/javascript">
+				//1. 
+				function uninformedVoter() {
+					var randomValue = Math.random();
+					if (randomValue < .33) {
+						return "trump";
+					} else if (randomValue < .66) {
+						return "cruz";
+					} else {
+						return "rubio";
+					}; 
+				};
+				document.getElementById('p01output').innerText = uninformedVoter();
+				
+			</script>
+
+			
+		</p>
+
+		<p>
+			<div>2.</div>
+			<div id="p02output"></div>
+			<script type="text/javascript">
+				//2.
+				
+				//The below probabilities will be used for problem 7
+				//var probabilities = [.1,.1,.8];
+
+
+				var probabilities = [.42,.38,.2];
+				function voterGenerator(myArray) {
+					return function likelyVoter(){
+
+						var randomValue = Math.random();
+					//console.log(randomValue);
+						if (randomValue < myArray[0]) {
+							return "trump";
+						} else if (randomValue < myArray[0] + myArray[1]) {
+							return "cruz";
+						} else if (randomValue < myArray[0] + myArray[1] + myArray[2]){
+							return "rubio";
+						};
+
+					};
+					 
+				};
+				
+				document.getElementById('p02output').innerText = voterGenerator(probabilities)();
+				
+			</script>
+		</p>
+		<p>
+			<div>3.</div>
+			<div id="p03output"></div>
+			<script type="text/javascript">
+				
+				//3. Poll Simulator
+				function pollN (n,voter) {
+					var votes = [];
+					for (var i = 0; i < n; i++) {
+						var result = voterGenerator(probabilities)();
+						votes.push(result);
+					};
+					return votes;
+				};
+				document.getElementById('p03output').innerText = pollN(20,voterGenerator(probabilities)());
+				
+			</script>
+		</p>
+		<p>
+			<div>4.</div>
+			<div id="p04output"></div>
+			<script type="text/javascript">
+				
+				//4.
+				function winner (n,voter) {
+					var votes = [];
+					var trumpCount = 0;
+					var cruzCount = 0;
+					var rubioCount = 0;
+					var highestCount = "";
+					
+					//results of the votes get pushed to the votes array
+					for (var i = 0; i < n; i++) {
+						var result = voterGenerator(probabilities)();
+						votes.push(result);
+					};
+					//count the number of votes for each candidate
+					for (var i = 0; i < votes.length; i++) {
+						if (votes[i] === "trump"){
+							trumpCount++;
+							
+						} else if (votes[i] === "cruz") {
+							cruzCount++;
+							
+						} else {
+							rubioCount++;
+							
+						};
+					};
+					// check which count is the highest and set that candidate to "highestCount"
+					if (trumpCount > cruzCount && trumpCount > rubioCount) {
+							highestCount = "trump";
+					} else if (cruzCount > trumpCount && cruzCount > rubioCount){
+							highestCount = "cruz";
+					} else {
+							highestCount = "rubio";
+					};
+
+					//if there is a tie between two highestCount candidates randomly select one and set it to highestCount
+					if (trumpCount === cruzCount && trumpCount > rubioCount) { 
+						var randomValue = Math.random();
+						if (randomValue < .5){ 
+							highestCount = "trump";
+							} else if (randomValue > .5){ 
+							highestCount = "cruz"
+							};
+
+					} else if ( trumpCount === rubioCount && trumpCount > cruzCount){
+						var randomValue = Math.random();
+						if (randomValue < .5){ 
+							highestCount = "trump";
+						} else if (randomValue > .5){ 
+							highestCount = "rubio";
+							};						
+					} else if ( cruzCount === rubioCount && cruzCount > trumpCount){
+						var randomValue = Math.random();
+						if (randomValue < .5){ 
+							highestCount = "cruz";
+						} else if (randomValue > .5){ 
+							highestCount = "rubio";
+						};
+					};
+
+					//log the results to console for verification purposes.
+
+					 console.log("Trump: " + trumpCount);
+					 console.log("Cruz: " + cruzCount);
+					 console.log("Rubio: " + rubioCount);
+
+					return highestCount;
+				};
+				document.getElementById('p04output').innerText = winner(20,voterGenerator(probabilities)());
+				
+			</script>
+		</p>
+		<p>
+			<div>5.</div>
+			<div id="p05output"></div>
+			<script type="text/javascript">
+				
+				//5. 
+				function multiplePolls (n,k,voter) {
+					//n = number of voters
+					//k = number of polls
+					var trumpWin = 0;
+					for (var i = 0; i < k; i++) {
+						var wins = winner(n,voterGenerator(probabilities)());
+						if (wins === "trump") { trumpWin++; };
+					};
+					//hw description said to return the number of correct (trump) victories so I am returning trump's win count
+					return trumpWin;
+				};
+				document.getElementById('p05output').innerText = multiplePolls(100,5,voterGenerator(probabilities)()) + " trump win(s)";
+			</script>
+		</p>
+		<p>
+			<div>6.</div>
+			<div id="p06output">It seems that increasing the number of voters while keeping the poll count constant results in more accurate poll values. If we keep that poll count to 5, having ~800 voters seems to give the "correct" answer most of the time. Adjusting the poll count seems to increase the margin of error. As the commented options are run you can see that the proportional number of times that trump wins is lower.</div>			
+			<script type="text/javascript">
+
+				//copy and paste examples
+				// multiplePolls(100,50,voterGenerator(probabilities)());
+				// multiplePolls(100,500,voterGenerator(probabilities)());
+				//instead, if we adjust the voter count we can see that trump has a lower margin of error.
+				// multiplePolls(1000,5,voterGenerator(probabilities)());
+				// multiplePolls(5000,5,voterGenerator(probabilities)());
+				
+
+			</script>
+		</p>
+
+		<p>
+			<div>7. Switching the probabilities so that Rubio has the highest chance of winning seems to not change the outcome much. However, after increasing his probability so there is a significant difference, my results showed that the number of voters needed for a correct win decreased. Therefore, the more probability there is for a winning outcome (Rubio, for example), the less voters are needed.</div>
+			<div id="p07output"></div>			
+			<script type="text/javascript">
+				
+			//the below line is used after using the test probabilities from problem 2 which are commented out.
+				document.getElementById('p07output').innerText = multiplePolls(100,5,voterGenerator(probabilities)());
+
+				//copy and paste in the console and run several times:
+				//multiplePolls(1000,5,voterGenerator(probabilities)());
+				//multiplePolls(50,5,voterGenerator(probabilities)());
+				//multiplePolls(10,5,voterGenerator(probabilities)());
+			</script>
+		</p>
+
+	</body>
+</html>
